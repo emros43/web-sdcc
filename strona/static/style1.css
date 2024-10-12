@@ -1,0 +1,362 @@
+:root {
+  --darkest: #fff;
+  --middle: #fff;
+  --lightest: #fff;
+  --font: black;
+  --bg: #ffb703;
+}
+
+.dark-theme {
+  --darkest: #1b1c22;
+  --middle: #21262b;
+  --lightest: #2d2f3a;
+  --font: white;
+  --bg: #219ebc;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Helvetica', sans-serif;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    scrollbar-color: var(--bg) var(--middle);
+    scrollbar-width: thin;
+    color: var(--font);
+}
+
+body {
+    background: var(--bg);
+    font-size: 20px;
+}
+
+
+
+/* Grid */
+#grid {
+    display: grid;
+    grid-template-areas:
+            "menu menu menu menu"
+            "file code dragbar fragment"
+            "file bar bar bar"
+            "file bar-data bar-data bar-data";
+    grid-template-columns: 20% 1fr 6px 35%;
+    grid-template-rows: 50px 1fr 50px 20%;
+    grid-gap: 2px;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+
+/* Darkmode */
+.theme-button {
+    width: 35px;
+    height: 35px;
+    margin: 7px;
+    border-radius: 50%;
+    background-color: transparent;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--lightest);
+}
+
+.theme-button:hover {
+    background-color: var(--bg);
+}
+
+.theme-img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}  
+
+
+
+/* Menu */
+#menu {
+    grid-area: menu;
+    background: var(--darkest);
+}
+
+.dropdown {
+    display: inline-block;
+    width: 100px;
+    height: auto;
+}
+
+.dropdown-button {
+    position: relative;
+    display: inline-block;
+    background-color: var(--lightest);
+    text-decoration: none;
+    color: var(--font);
+    padding: 13px;
+    font-size: 20px;
+    width: 100px;
+    height: auto;
+    z-index: 1;
+}
+
+.dropdown-content {
+    background-color: var(--bg);
+    display: none;
+    position: absolute;
+    min-width: 100px;
+    z-index: 2;
+    padding: 10px;
+}
+
+.dropdown-content a, label {
+    color: var(--font);
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover, .dropdown-button:hover, .dropdown-button a:hover, .dropdown-content a:hover {
+    background-color: var(--font);
+    color: var(--bg);
+    cursor: pointer;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.submit-label:hover {
+    cursor: pointer;
+    background-color: var(--font);
+    color: var(--bg);
+}
+
+
+
+/* File */
+#file {
+    grid-area: file;
+    overflow: auto;
+    background: var(--darkest);
+}
+
+.file-tree {
+    margin-left: 10px;
+    color: var(--font);
+}
+
+#file > .file-tree {
+    margin-top: 10px;
+}
+
+summary:hover {
+    color: var(--bg);
+}
+
+#file p {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+
+/* Code */
+#code {
+    grid-area: code;
+    overflow: auto;
+    background: var(--middle);
+    font-family: 'Courier New', monospace;
+    color: var(--font);
+    padding: 10px;
+    padding-left: 40px;
+}
+
+#code pre, #fragment pre {
+    font-family: 'Courier New', monospace;
+    color: var(--font);
+    padding: 10px;
+    padding-left: 40px;
+}
+
+/* Resize code/fragment */
+#dragbar {
+    background-color: var(--bg);
+    grid-area: dragbar;
+    cursor: ew-resize;
+}
+
+/* Fragment */
+#fragment {
+    grid-area: fragment;
+    overflow: auto;
+    background: var(--middle);
+    font-family: 'Courier New', monospace;
+    color: var(--font);
+    padding: 10px;
+    padding-left: 40px;
+}
+
+
+
+/* Bar */
+.bar {
+    grid-area: bar;
+    background: var(--lightest);
+}
+
+.bar-button {
+    position: relative;
+    display: inline-block;
+    background-color: var(--darkest);
+    text-decoration: none;
+    color: var(--font);
+    padding: 13px;
+    font-size: 20px;
+    width: auto;
+    height: auto;
+    z-index: 1;
+}
+
+.bar-button:hover {
+    background-color: var(--font);
+    color: var(--bg);
+    cursor: pointer;
+}
+
+
+
+/* Bar data */
+.bar-data {
+    grid-area: bar-data;
+    overflow: auto;
+    background: var(--middle);
+}
+
+.bar-data div {
+    margin: 20px;
+}
+
+.bar-data div input {
+    margin: 5px;
+}
+
+.bar-data div:not(:target) {
+    display: none;
+}
+
+.bar-data div:target {
+    display: block;
+}
+
+
+
+/* Smaller devices */
+@media only screen and (max-width: 1100px) {
+    body {
+        font-size: 40px;
+    }
+
+    #grid {
+        display: grid;
+        grid-template-columns: 95vw 5vw;
+        grid-template-rows: auto 30vh 90vh 50vh auto 10vh;
+        grid-gap: 5px;
+    }
+
+    .theme-button {
+        width: 6vh;
+        height: 6vh;
+    }
+
+    .theme-img {
+        width: 6vh;
+        height: 6vh;
+    }
+
+    input {
+        width: 5vw;
+        height: 5vw;
+        z-index: 4;
+    }
+    
+    #menu {
+        grid-row-start: 1;
+        grid-row-end: 2;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+
+    .dropdown {
+        width: auto;
+        height: 15vh;
+    }
+    
+    .dropdown-button {
+        padding: 3px;
+        font-size: 40px;
+        width: auto;
+        height: 5vh;
+    }
+
+    .dropdown-content {
+        top: 5vh;
+        left: 0;
+        width: 100vw;
+    }
+
+    #file {
+        grid-row-start: 2;
+        grid-row-end: 3;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+
+    #code {
+        grid-row-start: 3;
+        grid-row-end: 4;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+
+    #fragment {
+        grid-row-start: 4;
+        grid-row-end: 5;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+    
+    .bar {
+        grid-row-start: 5;
+        grid-row-end: 6;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+
+    .bar-button {
+        font-size: 30px;
+        width: auto;
+        height: 5vh;
+        text-align: center;
+    }
+
+    .bar-data {
+        grid-row-start: 6;
+        grid-row-end: 7;
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+
+    @media only screen and (max-width: 700px) {
+        body {
+            font-size: 25px;
+        }
+     
+        .dropdown-button {
+            font-size: 25px;
+        }
+
+        .bar-button {
+            font-size: 25px;
+        }
+    }
+}

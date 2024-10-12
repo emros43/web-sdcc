@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <title>Strona</title>
+        <meta name="author" content="Emilia Rosła">
+        
+        <link rel="stylesheet" type="text/css" href="../static/style1.css">
+        <script type="text/javascript" src="../static/visuals.js"></script>
+
+    </head>
+
+    <body>
+        <h2>Dodaj nowy plik</h2>
+        <form method="POST" style="--font: black;">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit">Dodaj plik</button>
+        </form>
+    </body>
+</html>

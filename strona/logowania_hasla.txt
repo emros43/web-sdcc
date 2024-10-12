@@ -1,0 +1,5 @@
+login: admin
+haslo: admin
+
+login: uno
+haslo: 111unounouno

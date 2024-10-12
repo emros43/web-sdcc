@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <title>Strona</title>
+        <meta name="author" content="Emilia Rosła">
+        
+        <link rel="stylesheet" type="text/css" href="../static/style1.css">
+        <script type="text/javascript" src="../static/visuals.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="../static/functionality.js"></script>
+    </head>
+
+    <body onresize="ResetColumnSizes()">
+        <div id="grid" onmouseup="EndDrag()" onmousemove="OnDrag(event)">
+            <div id="menu">
+                <div class="dropdown">
+                    <button class="dropdown-button">Plik</button>
+                    {% if user.is_authenticated %}
+                        <div class="dropdown-content">
+                            <label for="submit-form" tabindex="0" class="submit-label" onclick="kompiluj(event)">Kompiluj i wyświetl plik.asm</label>
+                            <label for="submit-form" tabindex="1" class="submit-label" onclick="pobierz(event)">Pobierz plik.asm</label>
+                        </div>
+                    {% else %}
+                        <div class="dropdown-content">Zaloguj się, żeby kompilować pliki</div>
+                    {% endif %}
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-button">Edycja</button>
+                    {% if user.is_authenticated %}
+                        <div class="dropdown-content">
+                            <a href="{% url 'nowy_plik' %}">Dodaj plik</a>
+                            <a href="{% url 'usun_plik' %}">Usuń plik</a>
+                            <a href="{% url 'nowy_katalog' %}">Dodaj katalog</a>
+                            <a href="{% url 'usun_katalog' %}">Usuń katalog</a>
+                        </div>
+                    {% else %}
+                        <div class="dropdown-content">Zaloguj się, żeby modyfikować pliki</div>
+                    {% endif %}
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-button">Opcje</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="alert('Ustawienia')">Ustawienia</a>
+                    </div>
+                </div>
+
+
+                <div class="dropdown">
+                    <button class="dropdown-button">Pomoc</button>
+                    <div class="dropdown-content">
+                        <a href="https://sdcc.sourceforge.net/" target="_blank" rel="noopener noreferrer">Strona SDCC</a>
+                        <a href="https://github.com/hungtcs-lab/8051-examples" target="_blank" rel="noopener noreferrer">Repozytorium 8051</a>
+                        <a href="https://github.com/losinggeneration/sdsc_print" target="_blank" rel="noopener noreferrer">Repozytorium Z80</a>
+                        <a href="https://github.com/jukkas/stm8-sdcc-examples" target="_blank" rel="noopener noreferrer">Repozytorium STM8</a>
+                    </div>
+                </div>
+
+
+                {% if user.is_authenticated %}
+                    <div style="float:right; z-index:1;">
+                        <a href="{% url 'wyloguj' %}" class="bar-button" onclick="alert('Wylogowano.')">Wyloguj</a>
+                    </div>
+                {% else %}
+                    <div style="float:right; z-index:1;">
+                        <a href="{% url 'zaloguj' %}" class="bar-button">Zaloguj</a>
+                    </div>
+                {% endif %}
+
+                <div style="float:right; z-index:1;">
+                    <button class="theme-button" onclick="changeColorTheme()">
+                        <img class="theme-img" src="../static/moon-icon.png" alt="dark">
+                    </button>
+                </div>
+            </div>
+
+
+
+            <div id="file">
+                <div class="file-tree">
+                    {% if katalogi.count > 0 %}
+                        {% for k in katalogi %}
+                            {% if k.dostepny and k.rodzic_folder == root and k.wlasciciel == user %}
+                                {{ k }}{{ '/' }}
+                                <br>
+                                {% include "katalog_list.html" with root=k.nazwa pliki=pliki katalogi=katalogi %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if pliki.count > 0 %}
+                        {% for p in pliki %}
+                            {% if p.dostepny and p.rodzic_folder == root and p.wlasciciel == user %}
+                                <p onclick="wypiszTresc('{{ p.nazwa }}')">{{ p }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+
+
+            <div id="code" class="editor">
+                <text style="padding: 25px; display: flex; justify-content: center;">Tutaj wyświetli się wybrany plik.</text>
+            </div>
+
+
+
+            <div class="bar">
+                <button class="bar-button" onclick="otworzInfo(event, 'item1')">Standard</button>
+                <button class="bar-button" onclick="otworzInfo(event, 'item2')">Optymalizacje</button>
+                <button class="bar-button" onclick="otworzInfo(event, 'item3')">Procesor</button>
+                <button class="bar-button" onclick="otworzInfo(event, 'item4')">Zależne</button>
+            </div>
+
+
+
+            <div class="bar-data">
+                <form method="GET" id="wyslij">
+                {% csrf_token %}
+                    <div id="item1" class="info">
+                        <input type="radio" name="item1" value="--std-c89">ANSI C89
+                        <br>
+                        <input type="radio" name="item1" value="--std-c99">ISO C99
+                        <br>
+                        <input type="radio" name="item1" value="--std-c11">ISO C11
+                    </div>
+                    <div id="item2" class="info"> 
+                        <input type="checkbox" name="speed" value="--opt-code-speed">--opt-code-speed
+                        <br>
+                        <input type="checkbox" name="size" value="--opt-code-size">--opt-code-size
+                        <br>
+                        <input type="checkbox" name="nolabel" value="--nolabelopt">--nolabelopt
+                    </div>
+                    <div id="item3" class="info">
+                        <input type="radio" name="item3" class="item3" class="m" value="-mmcs51" onclick="openProcesor(event, 'm')">MCS51
+                        <br>
+                        <input type="radio" name="item3" class="item3" class="z" value="-mz80" onclick="openProcesor(event, 'z')">Z80
+                        <br>
+                        <input type="radio" name="item3" class="item3" class="s" value="-mstm8" onclick="openProcesor(event, 's')">STM8
+                    </div>
+
+                    <div id="item4" class="info">
+                        <div id="m" class="item4"> <!--mcs-->
+                            <input type="checkbox" name="zalezna1" value="--model-small">--model-small
+                            <br>
+                            <input type="checkbox" name="zalezna2" value="--model-large">--model-large
+                            <br>
+                            <input type="checkbox" name="zalezna3" value="--model-huge">--model-huge
+                        </div>
+                        <div id="z" class="item4"> <!--z80-->
+                            <input type="checkbox" name="zalezna1" value="--callee-saves-bc">--callee-saves-bc
+                            <br>
+                            <input type="checkbox" name="zalezna2" value="--portmode=z80">--portmode=z80
+                            <br>
+                            <input type="checkbox" name="zalezna3" value="--fno-omit-frame-pointer">--fno-omit-frame-pointer
+                        </div>
+                        <div id="s" class="item4"> <!--st-->
+                            <input type="checkbox" name="zalezna1" value="--model-medium">--model-medium
+                            <br>
+                            <input type="checkbox" name="zalezna2" value="--model-large">--model-large
+                            <br>
+                            <input type="checkbox" name="zalezna3" value="--nostdlibcall">--nostdlibcall
+                        </div>
+                    </div>
+
+                    <input type="submit" id="submit-form" name="submit-form" hidden>
+                </form>
+            </div>
+
+
+
+            <div id="dragbar" onmousedown="StartDrag()"></div>
+
+
+
+            <div id="fragment">
+                <text style="padding: 25px; display: flex; justify-content: center; overflow: auto;">Tutaj wybrany plik skompiluje się do pliku .asm z domyślnymi flagami "--std-c11 -mstm8".<br>
+                Żeby skompilować go z wybranymi flagami i wyświetlić, wybierz je na dole, a następnie kliknij Plik/Kompiluj.<br>
+                Żeby tylko pobrać plik, wybierz flagi na dole i kliknij Plik/Pobierz.</text>
+            </div>
+        </div>
+    </body>
+</html>

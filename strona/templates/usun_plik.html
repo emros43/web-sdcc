@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <title>Strona</title>
+        <meta name="author" content="Emilia Rosła">
+        
+        <link rel="stylesheet" type="text/css" href="../static/style1.css">
+        <script type="text/javascript" src="../static/visuals.js"></script>
+
+    </head>
+
+    <body>
+        <h2>Usuń plik</h2>
+        <form method="POST" style="--font: black;">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="plik">Wybierz plik do usunięcia:</label>
+                <select class="form-control" id="plik" name="plik">
+                    {% for p in pliki %}
+                        {% if p.wlasciciel == user %}
+                            <option value="{{ p.nazwa }}">{{ p }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Usuń</button>
+        </form>
+    </body>
+</html>

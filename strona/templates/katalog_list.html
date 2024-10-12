@@ -1,0 +1,13 @@
+{% for k in katalogi %}
+    {% if k.dostepny and k.rodzic_folder.nazwa == root %}
+        {{ k }}{{ '/' }}
+        <br>
+        {% include "katalog_list.html" with root=k.nazwa pliki=pliki katalogi=katalogi %}
+    {% endif %}
+{% endfor %}
+
+{% for p in pliki %}
+    {% if p.dostepny and p.rodzic_folder.nazwa == root %}
+        <p onclick="wypiszTresc('{{ p.nazwa }}')">{{ p }}</p>
+    {% endif %}
+{% endfor %}
